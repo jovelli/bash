@@ -7,21 +7,21 @@ then
 	exit 1
 fi
 
-pomodoros=$1
-execute=$[ $2 * 60 ]
-rest=$[ $3 * 60 ]
+let pomodoros="$1"
+let execute="$[$2 * 60]"
+let rest="$[$3 * 60]"
 
 echo "Starting $pomodoros Pomodoros. Executing $2 minutes. Resting $3 minutes"
 
-while [ $pomodoros -gt 0 ] 
+while [ "$pomodoros" -gt 0 ]
 do 
-	pomodoros=$[ $pomodoros-1 ]
+	let pomodoros-=1
 
 	say -v Victoria "Starting Pomodoro"
 	sleep "$execute" 
 
 	afplay /System/Library/Sounds/Glass.aiff -v 3
-	say -v Victoria "Pomodoro completed! Now take a rest for $2 minutes"
+	say -v Victoria "Pomodoro completed! Now take a rest for $3 minutes"
 
 	sleep "$rest"
 	afplay /System/Library/Sounds/Glass.aiff -v 3

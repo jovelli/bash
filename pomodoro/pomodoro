@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ $# -ne 3 ] 
+then
+	echo "This script runs Pomodoro Time Management."
+	echo 'Usage: pomodoro ["Pomodoro Quantity" "Time Executing" "Time Resting"] all in minutes' 
+	exit 1
+fi
+
+pomodoros=$1
+execute=$[ $2 * 60 ]
+rest=$[ $3 * 60 ]
+
+echo "Starting $pomodoros Pomodoros. Executing $2 minutes. Resting $3 minutes"
+
+while [ $pomodoros -gt 0 ] 
+do 
+	pomodoros=$[ $pomodoros-1 ]
+
+	say -v Victoria "Starting Pomodoro"
+	sleep "$execute" 
+
+	afplay /System/Library/Sounds/Glass.aiff -v 3
+	say -v Victoria "Pomodoro completed! Now take a rest for $2 minutes"
+
+	sleep "$rest"
+	afplay /System/Library/Sounds/Glass.aiff -v 3
+	say -v Victoria "Resting is over!"
+done  
+
+say -v Victoria "Pomodoro is over"
+echo "Pomodoro is over"

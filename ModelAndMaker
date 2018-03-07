@@ -24,7 +24,7 @@ do
 
 	echo "$sanitizeMaker#$sanitizeModel#$sanitizeCarLicense#"
 
-	response=$(curl "http://denatran-server.staging.99taxis.com/v1/car/crlv?renavam=${sanitizeCarLicense}")
+	response=$(curl "http://server.staging.com/v1/car?license=${sanitizeCarLicense}")
 
 	echo "$response"
 

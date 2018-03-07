@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "### Starting script to list ModelAndMaker codes and descriptions ###"
+
+export PGPASSWORD='<password>'
+
+hostDoc="<host>"
+databaseDoc="<database>"
+userDoc="<user>"
+
+queryRenavam="select (replace((custom_fields -> 0 -> 'value')::text, '\"', '')) as maker, (replace((custom_fields -> 1 -> 'value')::text, '\"', '')) as model, lpad(replace((custom_fields -> 5 -> 'value')::text, '\"', ''), 11, '0') as CarLicense "`
+ 			`"from driver_document a  "`
+ 			`"where document_definition_id = 5 "`
+ 			`"and lpad(replace((custom_fields -> 5 -> 'value')::text, '\"', ''), 11, '0') not in ('00000000000', '11111111111'); "
+
+echo "Maker;Model;ModelMakerCode" >> "./result/all_regular_drivers.csv"
+
+# mysql - while IFS=$'\t' read -r maker model;
+while IFS=$'|' read -r maker model CarLicense; 
+do
+	sanitizeMaker="$(echo -e "${maker}" | tr -d '[:space:]')"
+	sanitizeModel="$(echo -e "${model}" | tr -d '[:space:]')"
+	sanitizeCarLicense="$(echo -e "${CarLicense}" | tr -d '[:space:]')"
+
+	echo "$sanitizeMaker#$sanitizeModel#$sanitizeCarLicense#"
+
+	response=$(curl "http://denatran-server.staging.99taxis.com/v1/car/crlv?renavam=${sanitizeCarLicense}")
+
+	echo "$response"
+
+	modelMakerDescription="$(echo "$response" | grep -o 'modelAndMakerDescription":"\w\+"' | sed 's/modelAndMakerDescription":"//g')"
+
+	echo "$sanitizeMaker;$sanitizeModel;$modelMakerDescription" >> "./result/all_regular_drivers.csv"
+
+done< <(psql -h"$hostDoc" -d"$databaseDoc" -U"$userDoc" -c"$queryRenavam" -t)

@@ -26,9 +26,8 @@ do
 
 	response=$(curl "http://server.staging.com/v1/car?license=${sanitizeCarLicense}")
 
-	echo "$response"
-
-	modelMakerDescription="$(echo "$response" | grep -o 'modelAndMakerDescription":"\w\+"' | sed 's/modelAndMakerDescription":"//g')"
+	middle="${response#*modelAndMakerDescription\":\"}"
+	modelMakerDescription="${middle%\",\"color*}"
 
 	echo "$sanitizeMaker;$sanitizeModel;$modelMakerDescription" >> "./result/all_regular_drivers.csv"
 
